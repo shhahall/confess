@@ -1,38 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Send Message to Discord</title>
+    <title>Masked Murmurs</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <input type="text" id="message" placeholder="Type your message">
-    <button onclick="sendMessage()">Send to Discord</button>
+    <div class="outerbox">
+        <div class="content">
+            <h1>Masked Murmurs</h1>
+            <p>The confessions you send here will be posted on <a class="insta-link" href="https://www.instagram.com/masked.murmers/">our Instagram account</a>.</p>
+            <input type="text" id="message" placeholder="">
+            
+            <button id="sendButton">SEND</button>
+           
+                <input type="file" id="imageInput" class="custom-file-input">
+                <label class="custom-file-label" for="imageInput">Upload Image</label>
+            
+        </div>
+    </div>
 
     <script>
         function sendMessage() {
             const webhookUrl = 'https://discord.com/api/webhooks/1123521900920967168/YaNSZaXWdfSBFlr-7eagCpp-7rjuBAqarghTlQVh1RKVdgOgt1O3kB7pHtwSstzvnvlb'; // Replace with your provided webhook URL
             const messageInput = document.getElementById('message');
+            const imageInput = document.getElementById('imageInput');
             const message = messageInput.value;
+            const imageFile = imageInput.files[0];
 
-            if (!message) {
-                alert('Please enter a message.');
+            if (!message && !imageFile) {
+                alert('Please enter a message or select an image.');
                 return;
             }
 
-            const data = {
-                content: message
-            };
+            const formData = new FormData();
+            formData.append('content', message);
+
+            if (imageFile) {
+                formData.append('file', imageFile);
+            }
 
             fetch(webhookUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                body: formData
             })
             .then(response => {
                 if (response.ok) {
                     alert('Message sent successfully!');
                     messageInput.value = '';
+                    imageInput.value = ''; // Clear the selected file
                 } else {
                     alert('An error occurred while sending the message.');
                 }
@@ -42,6 +57,9 @@
                 alert('An error occurred while sending the message.');
             });
         }
+
+        const sendButton = document.getElementById('sendButton');
+        sendButton.addEventListener('click', sendMessage);
     </script>
 </body>
 </html>
